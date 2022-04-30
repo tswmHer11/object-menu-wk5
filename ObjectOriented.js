@@ -39,7 +39,7 @@ class Vehicle {
         if (accessory instanceof Upgrades) {
             this.accessories.push(accessory);
         }else {
-            throw new Error(`You can only add an instance of Upgrades. Argument is not an Upgrade: ${accessories} `);
+            throw new Error(`You can only add an instance of Upgrades. Argument is not an Upgrade: ${accessory} `);
         }
         // describe() {
         //     return `This is the model of your vehicle: ${this.model} `
@@ -153,18 +153,47 @@ class Menu {
     viewVehiclePackages() {
         let vehiclePackageString = '';
         for (let i = 0; i < this.vehicleMakeModel.length; i++) {
-            vehiclePackageString += i + ') ' + this.vehicleMakeModel[i].make + ' ' + this.vehicleMakeModel[i].modelTrim + ' Package' + '\n';
+            vehiclePackageString += (i+1) + ') ' + this.vehicleMakeModel[i].make + ' ' + this.vehicleMakeModel[i].modelTrim + ' Package' + '\n';
         }
         let index = prompt(`Enter the index of the vehicle package you wish to view: \n 
         ---------------------- \n` + vehiclePackageString);
-        if (index > -1 && index < this.vehicleMakeModel.length) {
-            this.selectedVehicle = this.vehicleMakeModel[index];
-            let description = 'Vehicle Package: ' + this.selectedVehicle.vehicleMakeModel + '\n';
+        if (index > -1 && (index - 1) < this.vehicleMakeModel.length) {
+            this.selectedVehicle = this.vehicleMakeModel[index - 1];
+            // let description = 'Vehicle Package: ' + this.selectedVehicle.vehicleMakeModel + '\n';
             
-            for (let i = 0; i < this.selectedVehicle.accessories.length; i++){
-                description += i + ') ' + this.selectedVehicle.accessories[i].length + '\n';
-            } 
-            let selection = this.showVehicleMenuOptions(description);
+            // for (let i = 0; i < this.selectedVehicle.accessories.length; i++){
+            //     description += i + ') ' + this.selectedVehicle.accessories[i] + '\n';
+            // } 
+
+            // let selection = this.showVehicleMenuOptions();
+            // switch (selection) {
+            //     case '1':
+            //         this.addAccessory();                        
+            //         break;
+            //     case '2':
+            //         this.deleteAccessory();
+            //         break;
+            //     case '3':
+            //         this.displayAccessoryUpgrades();
+            //         break;
+            //     default: 
+            //         selection = 0;
+            // }
+           this.showVehicleMenuOptions();
+        }       
+    }
+
+    showVehicleMenuOptions() {
+        let selection = 
+            this.selectedVehicle && prompt(`
+                Currently viewing: ${this.selectedVehicle.make + ' ' + this.selectedVehicle.modelTrim} 
+
+                0) EXit
+                1) Add accessories/upgrades
+                2) Delete accessories/upgrades
+                3) Display vehicle accessories/upgrades
+            `);
+        // if (selection) {       
             switch (selection) {
                 case '1':
                     this.addAccessory();                        
@@ -177,37 +206,38 @@ class Menu {
                     break;
                 default: 
                     selection = 0;
-            }
-           
-        }       
+            }   
+        // }
     }
-    showVehicleMenuOptions() {
-        return prompt(`
-        0) EXit
-        1) Add accessories/upgrades
-        2) Delete accessories/upgrades
-        3) Display vehicle accessories/upgrades
-        `);
-    }
+    
+
     addAccessory() {
-        let accessory = '';
-        while (accessory != 'n' || this.selectedVehicle.accessories.length != 10){
+        // let accessory = " ";
+
+        while (this.selectedVehicle.accessories.length < 10){
             let accessory = prompt('What Accessory/Upgrade would you like to add? (Max 10) or Enter "n" to stop.');
-            this.selectedVehicle.accessories.push(new Upgrades(accessory));
-            if (accessory == 'n'){
-                break;
+            if (accessory == 'n' || accessory.length < 1){
+                this.showVehicleMenuOptions();
             } 
+            this.selectedVehicle.addUpgrades(new Upgrades(accessory));
+            
         }
+        if (this.selectedVehicle.accessories.length == 10) {
+            alert ('Limit of 10 accessories reached. Hit enter to exit.');
+        }
+        this.showVehicleMenuOptions();
     }
     displayAccessoryUpgrades() {
         let displayAU = '';
         for (let i = 0; i < this.selectedVehicle.accessories.length; i++) {
-            displayAU += i + ') ' + this.selectedVehicle.accessories[i].length;
+            displayAU += (i+1) + ' ) ' + this.selectedVehicle.accessories[i].accessory + "\n";
             // console.log(this.selectedVehicle.accessories[i].length)
-        }alert (`Here are your vehicle accessories and upgrades: \n`
+        }alert (`Here are your ${this.selectedVehicle.make + " " + this.selectedVehicle.modelTrim} accessories and upgrades: \n`
          + displayAU);
-       
+
+         this.showVehicleMenuOptions();
     }
+    
 }
 let menu = new Menu();
 menu.start();
